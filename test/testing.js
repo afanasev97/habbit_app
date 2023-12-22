@@ -51,10 +51,23 @@ class P extends Promise {
 		this.f = f;
 
 		// console.log("start", this.f.toString());
+
+        // захват стека вызова
+        Error.captureStackTrace(this, P);
 	}
 }
 
+
 global.Promise = P;
+
+
+function getPendingPromises() {
+	return Array.from(s.values());
+};
+
+function getPendingPromisesStack() {
+	return Array.from(s.values()).map(p => p.stack);
+};
 
 async function test() {
   const pendingPromise1 = new Promise((resolve) => setTimeout(resolve, 3000));
@@ -66,7 +79,7 @@ async function test() {
   // Ждем завершения промисов
   await Promise.all([pendingPromise1, pendingPromise2]);
 
-  console.log('Pending Promises:', Array.from(s.values()).map(p => p.f.toString()));
+  console.log('Pending Promises:', getPendingPromises().map(p => p.f.toString()), getPendingPromisesStack());
 }
 
 test();

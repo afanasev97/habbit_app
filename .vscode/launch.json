@@ -21,6 +21,15 @@
 				"<node_internals>/**"
 			],
 			"program": "${workspaceFolder}/test/test_bluebird.js"
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "app",
+			"skipFiles": [
+				"<node_internals>/**"
+			],
+			"program": "${workspaceFolder}/app.js"
 		}
 	]
 }
