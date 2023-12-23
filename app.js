@@ -10,8 +10,8 @@ function iterable() {
         return i;
 	};
 	function previous() {
-		i--;
-        return i;
+		if (i) return --i;
+		log("no previous value"); // or throw new Error("no previous value");
 	};
 	function reset() {
 		i = 0;
@@ -29,4 +29,7 @@ const it = iterable();
 log(it.getValue());
 it.next();
 log(it.getValue());
-log(it.i)
+it.previous();
+log(it.getValue());
+it.previous();
+log(it.getValue());
