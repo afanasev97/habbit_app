@@ -1,13 +1,32 @@
 var log = console.log;
-const userAnswer = prompt('Сколько будет 7 + или - 15?');
-switch(true) {
-	case userAnswer === 'Я не робот':
-	case Number(userAnswer) === -8:
-	case Number(userAnswer) === 22:
-	    log('Успех');
-		break;
-	default:
-		log('Вы робот!');
-}
 
-// userAnswer in ['-8','22','Я не робот'] ? log('Успех') : log('Вы робот!');
+function iterable() {
+	let i = 0;
+	function getValue() {
+	    return i;
+	};
+	function next() {
+		i++;
+        return i;
+	};
+	function previous() {
+		i--;
+        return i;
+	};
+	function reset() {
+		i = 0;
+		return i;
+	};
+	return {
+		getValue,
+		next,
+		previous,
+        reset
+	}
+};
+
+const it = iterable();
+log(it.getValue());
+it.next();
+log(it.getValue());
+log(it.i)
