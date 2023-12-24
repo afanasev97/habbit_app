@@ -1,35 +1,25 @@
 var log = console.log;
 
-function iterable() {
-	let i = 0;
-	function getValue() {
-	    return i;
-	};
-	function next() {
-		i++;
-        return i;
-	};
-	function previous() {
-		if (i) return --i;
-		log("no previous value"); // or throw new Error("no previous value");
-	};
-	function reset() {
-		i = 0;
-		return i;
-	};
-	return {
-		getValue,
-		next,
-		previous,
-        reset
+function getMaxCredit(age, hasJob) {
+	switch (true) {
+		case age > 24: return hasJob ? 500 : 100;
+		default: return 0;
 	}
-};
+}
 
-const it = iterable();
-log(it.getValue());
-it.next();
-log(it.getValue());
-it.previous();
-log(it.getValue());
-it.previous();
-log(it.getValue());
+function calculateAllMoney(age, hasJob, ownMoney) {
+	return getMaxCredit(age, hasJob) + ownMoney;
+}
+
+function getRandomUser() {
+	return {
+        age: Math.floor(Math.random() * 40) + 16,
+        hasJob: Math.random() > 0.5,
+        ownMoney: Math.floor(Math.random() * 3950) + 50
+    };
+}
+const price = 2000;
+user = getRandomUser();
+log(user);
+log('Макс денег с кредитом: ',calculateAllMoney(user.age, user.hasJob, user.ownMoney))
+log(`Покупатель${calculateAllMoney(user.age, user.hasJob, user.ownMoney) >= price ? ' ' : ' не '}может купить товар стоимостью ${price}$.`);
