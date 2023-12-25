@@ -1,15 +1,15 @@
 const pendingPromises = new Map();
-let promiseId = 0;
 
 class P extends Promise {
   constructor(executor) {
+    const id = Symbol();
     const wrappedExecutor = (resolve, reject) => {
       const wrappedResolve = () => {
-        this.clearFromPending();
+        this.clearFromPending(id);
         return resolve(...arguments);
       };
       const wrappedReject = () => {
-        this.clearFromPending();
+        this.clearFromPending(id);
         return reject(...arguments);
       };
       
@@ -18,16 +18,14 @@ class P extends Promise {
 
     super(wrappedExecutor);
 
-    promiseId++;
-    this.id = promiseId;
-    pendingPromises.set(this.id, this);
+    pendingPromises.set(id, this);
     this.executor = executor;
 
     Error.captureStackTrace(this, P);
   }
 
-  clearFromPending() {
-    pendingPromises.delete(this.id);
+  clearFromPending(id) {
+    pendingPromises.delete(id);
   }
 }
 
@@ -40,6 +38,10 @@ function getPendingPromises() {
   }));
 }
 
+function getPendingPromisesCount() {
+  return pendingPromises.size;
+}
+
 // Пример использования
 
 async function test() {
@@ -47,11 +49,13 @@ async function test() {
   const pendingPromise2 = new Promise(resolve => setTimeout(resolve, 5000));
   const pendingPromise3 = new Promise(() => {});
 
-  console.log('Pending Promises:', Array.from(pendingPromises.values()).map(promise => promise.executor.toString()));
+  console.log('Number of Pending Promises Before:', getPendingPromisesCount());
+  console.log('Pending Promises Before:', getPendingPromises());
   
   await Promise.all([pendingPromise1, pendingPromise2]);
 
-  console.log('Pending Promises:');
+  console.log('Number of Pending Promises After:', getPendingPromisesCount());
+  console.log('Pending Promises After:');
   getPendingPromises().forEach(({ executor, stack }) => {
     console.log(executor, stack);
   });
