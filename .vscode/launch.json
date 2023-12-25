@@ -16,15 +16,6 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "test_bluebird",
-			"skipFiles": [
-				"<node_internals>/**"
-			],
-			"program": "${workspaceFolder}/test/test_bluebird.js"
-		},
-		{
-			"type": "node",
-			"request": "launch",
 			"name": "app",
 			"skipFiles": [
 				"<node_internals>/**"
