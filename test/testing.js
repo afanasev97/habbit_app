@@ -1,66 +1,59 @@
-const s = new Map();
-let i = 0;
+const pendingPromises = new Map();
+let promiseId = 0;
 
 class P extends Promise {
-	constructor(f) {
-		const wrapF = (resolve, reject) => {
-			const wrapresolve = () => {
-				// console.log("resolve", this.f.toString());
+  constructor(executor) {
+    const wrappedExecutor = (resolve, reject) => {
+      const wrappedResolve = () => {
+        this.clearFromPending();
+        return resolve(...arguments);
+      };
+      const wrappedReject = () => {
+        this.clearFromPending();
+        return reject(...arguments);
+      };
+      
+      return executor(wrappedResolve, wrappedReject);
+    };
 
-				s.delete(this.n);
+    super(wrappedExecutor);
 
-				return resolve(...arguments);
-			};
-			const wrapreject = () => {
-				// console.log("reject", this.f.toString());
+    promiseId++;
+    this.id = promiseId;
+    pendingPromises.set(this.id, this);
+    this.executor = executor;
 
-				s.delete(this.n);
+    Error.captureStackTrace(this, P);
+  }
 
-				return reject(...arguments);
-			};
-			
-			return f(wrapresolve, wrapreject);
-		};
-
-		super(wrapF);
-
-		i++;
-
-		this.n = i;
-
-		s.set(this.n, this);
-
-		this.f = f;
-
-		// console.log("start", this.f.toString());
-
-        // захват стека вызова
-        Error.captureStackTrace(this, P);
-	}
+  clearFromPending() {
+    pendingPromises.delete(this.id);
+  }
 }
-
 
 global.Promise = P;
 
-
 function getPendingPromises() {
-	return Array.from(s.values()).map(p => p.f.toString() + '\n' + p.stack);
-};
+  return Array.from(pendingPromises.values()).map(promise => ({
+    executor: promise.executor.toString(),
+    stack: promise.stack
+  }));
+}
 
-//Пишем функцию для тестирования
+// Пример использования
+
 async function test() {
-  const pendingPromise1 = new Promise((resolve) => setTimeout(resolve, 3000));
-  const pendingPromise2 = new Promise((resolve) => setTimeout(resolve, 5000));
-  const pendingPromise3 = new Promise((resolve) =>  { } );
+  const pendingPromise1 = new Promise(resolve => setTimeout(resolve, 3000));
+  const pendingPromise2 = new Promise(resolve => setTimeout(resolve, 5000));
+  const pendingPromise3 = new Promise(() => {});
 
-  console.log('Pending Promises:', Array.from(s.values()).map(p => p.f.toString()));
-
-  // Ждем завершения промисов
+  console.log('Pending Promises:', Array.from(pendingPromises.values()).map(promise => promise.executor.toString()));
+  
   await Promise.all([pendingPromise1, pendingPromise2]);
 
   console.log('Pending Promises:');
-  getPendingPromises().forEach(element => {
-	console.log(element);
+  getPendingPromises().forEach(({ executor, stack }) => {
+    console.log(executor, stack);
   });
 }
 
