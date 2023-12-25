@@ -1,21 +1,3 @@
-// const async_hooks = require('async_hooks');
-
-// const pendingPromises = new Map();
-
-// const asyncHook = async_hooks.createHook({
-//   init(asyncId, type, triggerAsyncId, resource) {
-//     if (type === 'PROMISE') {
-//       pendingPromises.set(asyncId, 'Pending');
-//     }
-//   },
-//   promiseResolve(asyncId) {
-//     pendingPromises.delete(asyncId);
-//   },
-// });
-
-// asyncHook.enable();
-
-
 const s = new Map();
 let i = 0;
 
@@ -62,13 +44,10 @@ global.Promise = P;
 
 
 function getPendingPromises() {
-	return Array.from(s.values());
+	return Array.from(s.values()).map(p => p.f.toString() + '\n' + p.stack);
 };
 
-function getPendingPromisesStack() {
-	return Array.from(s.values()).map(p => p.stack);
-};
-
+//Пишем функцию для тестирования
 async function test() {
   const pendingPromise1 = new Promise((resolve) => setTimeout(resolve, 3000));
   const pendingPromise2 = new Promise((resolve) => setTimeout(resolve, 5000));
@@ -79,7 +58,10 @@ async function test() {
   // Ждем завершения промисов
   await Promise.all([pendingPromise1, pendingPromise2]);
 
-  console.log('Pending Promises:', getPendingPromises().map(p => p.f.toString()), getPendingPromisesStack());
+  console.log('Pending Promises:');
+  getPendingPromises().forEach(element => {
+	console.log(element);
+  });
 }
 
 test();
