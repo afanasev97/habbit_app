@@ -7,15 +7,6 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "testing",
-			"skipFiles": [
-				"<node_internals>/**"
-			],
-			"program": "${workspaceFolder}/test/testing.js"
-		},
-		{
-			"type": "node",
-			"request": "launch",
 			"name": "app",
 			"skipFiles": [
 				"<node_internals>/**"
