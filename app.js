@@ -1,31 +1,32 @@
 var log = console.log;
-const tasks = ['Задача 1'];
-function addTask(task, taskArr) {
-	taskArr.push(task);
-};
-// classic:
-// function removeTask(task, taskArr) {
-// 	while (taskArr.includes(task)) {
-// 		taskArr.splice(taskArr.indexOf(task), 1);
-// 	};
-// };
-// recursive:
-function removeTask(task, taskArr) {
-	if (taskArr.includes(task)) {
-		taskArr.splice(taskArr.indexOf(task), 1);
-		return removeTask(task, taskArr)
-	};
+
+const operations = [1000, -700, 300, -500, 10000];
+const balance = 100;
+
+function getActualBalance(operationsArr, balance) {
+	for (const operation of operationsArr) {
+		balance += operation;
+	}
+	return balance;
 };
 
-function unshiftTask(task, taskArr) {
-	removeTask(task, taskArr);
-	taskArr.unshift(task);
-};
+function hasNegativeBalanceAfterOperation(operationsArr, balance) {
+	for (const operation of operationsArr) {
+		balance += operation;
+		if (balance < 0) return false;
+	}
+	return true;
+}
 
-module.exports = {
-    tasks,
-    addTask,
-    removeTask,
-    unshiftTask,
-    log
-};
+function countAverageIncomeAndOutcome(operationsArr) {
+	let positive = 0;
+	let negative = 0;
+	for (const operation of operationsArr) {
+		operation > 0 ? positive += operation : negative += operation;
+	}
+	return `Средний доход: ${(positive / operationsArr.filter(el => el > 0).length).toFixed(2)}\nСредний расход: ${(negative / operationsArr.filter(el => el < 0).length).toFixed(2)}\n`
+}
+
+log(getActualBalance(operations, balance))
+log(countAverageIncomeAndOutcome(operations))
+log(hasNegativeBalanceAfterOperation(operations, balance))
