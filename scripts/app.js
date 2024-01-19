@@ -149,6 +149,49 @@ function setIcon(context, icon) {
 	context.classList.add("icon_active");
 }
 
+function addHabbit(event) {
+	const form = event.target;
+	event.preventDefault();
+	const data = new FormData(form);
+	const name = data.get("name");
+	const target = data.get("target");
+	const icon = data.get("icon");
+	if (!icon) return;
+	if (validateForm(form, name, target)) return;
+	habbits = habbits.concat([{
+		id: habbits.length + 1,
+		name,
+		target: Number(target),
+		icon,
+		days: []
+	}]);
+	saveData();
+	rerender(habbits[habbits.length - 1].id);
+	togglePopUp();
+	clearPopupForm();
+}
+
+function validateForm(form, name, target) {
+	let wrongForm = false;
+	if (!name) {
+		form["name"].classList.add("error");
+		wrongForm = true;
+	}
+	if (!target || target < 1) {
+		form["target"].classList.add("error");
+		wrongForm = true;
+	}
+	if (!wrongForm) {
+		form["name"].classList.remove("error");
+		form["target"].classList.remove("error");
+	}
+	return wrongForm;
+}
+
+function clearPopupForm() {
+	page.popup.index.querySelector("form").reset();
+}
+
 /* init */
 (() => {
 	loadData();
