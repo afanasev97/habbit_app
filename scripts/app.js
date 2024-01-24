@@ -92,6 +92,7 @@ function rerender(activeHabbitId) {
 	globalActiveHabbitId = activeHabbitId;
 	const activeHabbit = habbits.find(habbit => habbit.id === activeHabbitId);
 	if (!activeHabbit) return;
+	document.location.replace(document.location.pathname + `#${activeHabbitId}`);
 	renderMenu(activeHabbit);
 	renderHead(activeHabbit);
 	rerenderContent(activeHabbit);
@@ -195,6 +196,16 @@ function clearPopupForm() {
 /* init */
 (() => {
 	loadData();
-	rerender(habbits[0].id);
+	const hashId = Number(document.location.hash.replace("#", ""));
+	const urlHabbit = habbits.find(habbit => habbit.id === hashId);
+	if (urlHabbit) {
+		rerender(urlHabbit.id);
+	} else {
+		if (habbits.length === 0) {
+			togglePopUp();
+		} else {
+			rerender(habbits[0].id);
+		}
+	}
 })();
 
